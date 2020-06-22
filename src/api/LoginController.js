@@ -1,6 +1,10 @@
 import send from '../config/MailConfig'
 import moment from 'moment'
-
+import jsonwebtoken from 'jsonwebtoken'
+import config from '@/config'
+import { checkCode } from '@/common/utils'
+import User from '@/model/User'
+import bcrypt from 'bcrypt'
 class LoginController {
   constructor() {}
   async forget(ctx) {
@@ -19,6 +23,109 @@ class LoginController {
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+  async reg(ctx) {
+    // 1. 判断验证码是否有效
+    // 2. 判断库里面是否存在该邮箱
+    // 3. 判断库里面是否存在改昵称
+    let { body } = ctx.request
+    // let body = {
+    //   username: '11776174@qq.com',
+    //   name: 'lijunjun',
+    //   password: '123456',
+    //   repassword: '123456',
+    //   code: '1234'
+    // }
+    let result = await checkCode(body.sid, body.code)
+    let check = true
+    if (result) {
+      // 验证码有效 查询库里面是否存在该邮箱
+      let user = await User.findOne({ username: body.username })
+      if (user !== null && typeof user.username !== 'undefined') {
+        check = false
+        ctx.body = {
+          code: 1,
+          msg: '该邮箱已存在,您可以直接登录或重新设置密码'
+        }
+      }
+      let name = await User.findOne({ name: body.name })
+      if (name !== null && typeof name.name !== 'undefined') {
+        check = false
+        ctx.body = {
+          code: 1,
+          msg: '该昵称已存在'
+        }
+      }
+      debugger
+      if (check) {
+        // 写入数据库
+        // 密码加密
+        body.password = await bcrypt.hash(body.password, 5)
+        let user = new User({
+          username: body.username,
+          name: body.name,
+          password: body.password,
+          created: new Date().getTime()
+        })
+        let result = await user.save()
+        ctx.body = {
+          code: 0,
+          data: result,
+          msg: '注册成功'
+        }
+      }
+    } else {
+      ctx.body = {
+        code: 1,
+        msg: '验证码错误或已过期,请刷新验证码'
+      }
+    }
+    // console.log(body)
+  }
+  async login(ctx) {
+    // 1. 接收用户数据
+    // 2. 验证图片验证码的正确和实效性
+    // 3. 验证用户名密码正确
+    // 4. 返回token
+    let {
+      body: { username, password, code, sid }
+    } = ctx.request // 用于接收post的参数
+    // 根据sid 判断code是否过期及有效
+    let result = await checkCode(sid, code)
+    if (result) {
+      // 查库 匹配数据库的用户名和密码
+      let chechUserPassword = false
+      let user = await User.findOne({
+        username
+      })
+      if (user.password === password) {
+        chechUserPassword = true
+      }
+      if (chechUserPassword) {
+        let token = jsonwebtoken.sign(
+          {
+            _id: '11776174@qq.com',
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 // 方式1设置过期时间 1小时过期
+          },
+          config.JWT_SECREY
+        )
+        ctx.body = {
+          code: 200,
+          token,
+          msg: '登录成功'
+        }
+      } else {
+        ctx.body = {
+          code: 1,
+          msg: '用户名或密码错误'
+        }
+      }
+    } else {
+      ctx.body = {
+        code: 1,
+        msg: '验证码错误或已过期'
+      }
     }
   }
 }

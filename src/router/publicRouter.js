@@ -4,6 +4,8 @@ import publicController from '../api/publicController'
 
 const router = new Router()
 
+// router.prefix('/public') // prefix在当前router下面加前缀
+
 router.get('/getCaptcha', publicController.getCaptcha)
 
 export default router
