@@ -6,11 +6,10 @@ import { checkCode } from '@/common/utils'
 import User from '@/model/User'
 import bcrypt from 'bcrypt'
 class LoginController {
-  constructor() {}
-  async forget(ctx) {
+  async forget (ctx) {
     const { body } = ctx.request // 通过 ctx.request 获取post带过来的参数
     try {
-      let result = await send({
+      const result = await send({
         code: '1234',
         expire: moment().add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss'), // 过期时间
         email: body.username,
@@ -25,11 +24,12 @@ class LoginController {
       console.log(error)
     }
   }
-  async reg(ctx) {
+
+  async reg (ctx) {
     // 1. 判断验证码是否有效
     // 2. 判断库里面是否存在该邮箱
     // 3. 判断库里面是否存在改昵称
-    let { body } = ctx.request
+    const { body } = ctx.request
     // let body = {
     //   username: '11776174@qq.com',
     //   name: 'lijunjun',
@@ -37,11 +37,11 @@ class LoginController {
     //   repassword: '123456',
     //   code: '1234'
     // }
-    let result = await checkCode(body.sid, body.code)
+    const result = await checkCode(body.sid, body.code)
     let check = true
     if (result) {
       // 验证码有效 查询库里面是否存在该邮箱
-      let user = await User.findOne({ username: body.username })
+      const user = await User.findOne({ username: body.username })
       if (user !== null && typeof user.username !== 'undefined') {
         check = false
         ctx.body = {
@@ -49,7 +49,7 @@ class LoginController {
           msg: '该邮箱已存在,您可以直接登录或重新设置密码'
         }
       }
-      let name = await User.findOne({ name: body.name })
+      const name = await User.findOne({ name: body.name })
       if (name !== null && typeof name.name !== 'undefined') {
         check = false
         ctx.body = {
@@ -62,13 +62,13 @@ class LoginController {
         // 写入数据库
         // 密码加密
         body.password = await bcrypt.hash(body.password, 5)
-        let user = new User({
+        const user = new User({
           username: body.username,
           name: body.name,
           password: body.password,
           created: new Date().getTime()
         })
-        let result = await user.save()
+        const result = await user.save()
         ctx.body = {
           code: 0,
           data: result,
@@ -83,27 +83,28 @@ class LoginController {
     }
     // console.log(body)
   }
-  async login(ctx) {
+
+  async login (ctx) {
     // 1. 接收用户数据
     // 2. 验证图片验证码的正确和实效性
     // 3. 验证用户名密码正确
     // 4. 返回token
-    let {
+    const {
       body: { username, password, code, sid }
     } = ctx.request // 用于接收post的参数
     // 根据sid 判断code是否过期及有效
-    let result = await checkCode(sid, code)
+    const result = await checkCode(sid, code)
     if (result) {
       // 查库 匹配数据库的用户名和密码
       let chechUserPassword = false
-      let user = await User.findOne({
+      const user = await User.findOne({
         username
       })
       if (user.password === password) {
         chechUserPassword = true
       }
       if (chechUserPassword) {
-        let token = jsonwebtoken.sign(
+        const token = jsonwebtoken.sign(
           {
             _id: '11776174@qq.com',
             exp: Math.floor(Date.now() / 1000) + 60 * 60 // 方式1设置过期时间 1小时过期

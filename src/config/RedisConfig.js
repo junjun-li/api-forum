@@ -6,7 +6,7 @@ const options = {
   port: config.REDISCONFIG.port,
   password: config.REDISCONFIG.password,
   detect_buffers: true, // 如果设置为true，则答复将作为缓冲区发送到回调。
-  retry_strategy: (options) => {
+  retry_strategy: options => {
     if (options.error && options.error.code === 'ECONNREFUSED') {
       // End reconnecting on a specific error and flush all commands with
       // a individual error
@@ -74,7 +74,7 @@ const options = {
 
 const client = promisifyAll(redis.createClient(options))
 
-client.on('error', (err) => {
+client.on('error', err => {
   console.log('redis连接失败: ' + err)
 })
 
@@ -83,28 +83,28 @@ export const setValue = (key, value, time) => {
     return
   }
   if (typeof value === 'string') {
-    if(time) {
+    if (time) {
       return client.set(key, value, 'EX', time)
     } else {
       return client.set(key, value)
     }
   } else if (typeof value === 'object') {
     // Object.keys 获取到一个对象的所有key, 返回key组成的数组
-    Object.keys(value).forEach((item) => {
+    Object.keys(value).forEach(item => {
       client.hset(key, item, value[item], redis.print)
     })
   }
 }
 
-export const getValue = (key) => {
+export const getValue = key => {
   return client.getAsync(key)
 }
 
-export const getHValue = (key) => {
+export const getHValue = key => {
   return client.hgetallAsync(key)
 }
 
-export const delValue = (key) => {
+export const delValue = key => {
   client.del(key, (err, res) => {
     if (res === 1) {
       console.log('成功删除')

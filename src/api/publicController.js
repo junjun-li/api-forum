@@ -1,10 +1,9 @@
 import svgCaptcha from 'svg-captcha'
 import { setValue } from '../config/RedisConfig'
 class PublicController {
-  constructor() {}
-  async getCaptcha(ctx) {
+  async getCaptcha (ctx) {
     // 获取get请求的参数
-    let body = ctx.request.query
+    const body = ctx.request.query
     const newCaptca = svgCaptcha.create({
       size: 4, // 验证码长度
       ignoreChars: '0o1il', // 验证码字符中排除 0o1i

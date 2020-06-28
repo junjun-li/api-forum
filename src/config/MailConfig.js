@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
-async function send(sendInfo) {
-  let transporter = nodemailer.createTransport({
+async function send (sendInfo) {
+  const transporter = nodemailer.createTransport({
     host: 'smtp.qq.com', // 连接的主机域名
     port: 587, // 连接端口
     secure: false, // true for 465, false for other ports
@@ -17,9 +17,9 @@ async function send(sendInfo) {
   //   email: '11776174@qq.com',
   //   user: 'Brian'
   // }
-  let url = 'http://www.imooc.com'
+  const url = 'http://www.imooc.com'
   // send mail with defined transport object
-  let info = await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: '"这是一封认证邮件喔 👻" <981311431@qq.com>', // 来自谁的
     to: sendInfo.email, // 接受者的邮箱
     subject:
@@ -39,7 +39,8 @@ async function send(sendInfo) {
     </div>
     ` // html body
   })
-  return 'Message sent: %s', info.messageId
+  // return 'Message sent: %s', info.messageId
+  return info.messageId
   // console.log('Message sent: %s', info.messageId)
   // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 

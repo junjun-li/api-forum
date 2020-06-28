@@ -19,12 +19,12 @@ const app = new Koa()
 // app.use(jwt({ secret: config.JWT_SECREY }).unless({ path: [/^\/public/] }))
 
 // jwt的使用方式2 这个包只拥有jwt鉴权的功能,但是生成token还需要另外一个库 jsonwebtoken
-const unless_path = [
+const unlessPath = [
   '/getCaptcha',
   '/reg'
 ]
 // const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: [/^\/public/,/^\/login/] })
-const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: unless_path })
+const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: unlessPath })
 
 const middleware = compose([
   koaBody(),
@@ -37,7 +37,7 @@ const middleware = compose([
   JWT
 ])
 // 是否是开发环境
-const isDevMode = process.env.NODE_ENV === 'production' ? false : true
+const isDevMode = process.env.NODE_ENV !== 'production'
 
 if (!isDevMode) {
   app.use(compress())
@@ -47,7 +47,7 @@ app.use(middleware)
 
 app.use(router())
 
-let port = !isDevMode ? 12005 : 3000
+const port = !isDevMode ? 12005 : 3000
 
 app.listen(port, () => {
   console.log(`The serve running at:${port}`)
