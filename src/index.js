@@ -21,7 +21,8 @@ const app = new Koa()
 // jwt的使用方式2 这个包只拥有jwt鉴权的功能,但是生成token还需要另外一个库 jsonwebtoken
 const unlessPath = [
   '/getCaptcha',
-  '/reg'
+  '/reg',
+  '/getPostList'
 ]
 // const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: [/^\/public/,/^\/login/] })
 const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: unlessPath })

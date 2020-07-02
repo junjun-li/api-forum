@@ -1,5 +1,5 @@
 import send from '../config/MailConfig'
-import moment from 'moment'
+import moment from 'dayjs'
 import jsonwebtoken from 'jsonwebtoken'
 import config from '@/config'
 import { checkCode } from '@/common/utils'
