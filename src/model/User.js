@@ -1,4 +1,4 @@
-import mongoose from '../config/DBHelpler'
+import mongoose from '@/config/DBHelpler'
 
 const Schema = mongoose.Schema
 
@@ -24,7 +24,7 @@ const UserSchema = new Schema({
   pic: { type: String, default: '/img/1587000589108.png' }, // 用户头像
   mobile: { type: Number, match: /^1[3-9](\d{9})$/, default: '' }, // 手机号码
   status: { type: String, default: '0' }, // 是否被禁用 0-正常 1-禁言 2-账号禁用
-  regmark: { type: String, default: '' }, // 个性签名
+  signature: { type: String, default: '' }, // 个性签名
   location: { type: String, default: '' }, // 城市
   isVip: { type: String, default: '0' }, // 是否是vip用户 0-普通用户 1-会员用户 2-7 vip的等级
   count: { type: Number, default: 0 } // 签到次数
@@ -33,13 +33,13 @@ const UserSchema = new Schema({
 UserSchema.pre('save', function (next) {
   // this.created = moment().format('YYY-MM-DD HH:mm:ss')
   this.created = new Date().getTime()
+  next()
 })
 
 // 更新时间
 // UserSchema.pre('update', function (next) {
 //   this.updated = moment().format('YYY-MM-DD HH:mm:ss')
 // })
-
 // 从数据库的层面上杜绝了数据的重复插入
 UserSchema.post('save', function (error, doc, next) {
   if (error.name === 'MongoError' && error.code === 11000) {

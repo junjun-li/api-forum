@@ -57,7 +57,7 @@ class LoginController {
           msg: '该昵称已存在'
         }
       }
-      debugger
+      console.log(check)
       if (check) {
         // 写入数据库
         // 密码加密
@@ -68,7 +68,9 @@ class LoginController {
           password: body.password,
           created: new Date().getTime()
         })
+        debugger
         const result = await user.save()
+        debugger
         ctx.body = {
           code: 0,
           data: result,

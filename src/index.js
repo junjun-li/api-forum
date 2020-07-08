@@ -16,10 +16,19 @@ const app = new Koa()
 
 // jwt的使用方式1 顺序不能错
 // app.use((ctx, next) => errorHandle(ctx, next))
-// app.use(jwt({ secret: config.JWT_SECREY }).unless({ path: [/^\/public/] }))
+// app.use(jwt({ secret: config.JWT_SECREY }).unless({
+//   path: [
+//     /^\/public/,
+//     '/getCaptcha',
+//     '/reg',
+//     '/getPostList'
+//     // /^\/*/
+//   ]
+// }))
 
 // jwt的使用方式2 这个包只拥有jwt鉴权的功能,但是生成token还需要另外一个库 jsonwebtoken
 const unlessPath = [
+  /^\/*/,
   '/getCaptcha',
   '/reg',
   '/getPostList'

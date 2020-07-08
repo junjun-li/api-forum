@@ -1,5 +1,6 @@
 export default (ctx, next) => {
   return next().catch((err) => {
+    // debugger
     console.log(err)
     if (err.status === 401) {
       ctx.status = 401

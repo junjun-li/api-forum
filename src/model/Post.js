@@ -1,11 +1,15 @@
-import mongoose from '../config/DBHelpler'
+import mongoose from '@/config/DBHelpler'
+import moment from 'moment'
 
 const Schema = mongoose.Schema
 
 const PostSchema = new Schema({
   // tid: { type: String }, // 默认的 id
   // uid: { type: String }, // 用户 id
-  uid: { type: String, ref: 'users' }, // 找到 users 表
+  uid: {
+    type: String,
+    ref: 'users'
+  }, // 找到 users 表
   title: { type: String }, // 文章标题
   content: { type: String }, // 文章内容
   created: { type: Number }, // 创建时间
@@ -51,9 +55,44 @@ PostSchema.statics = {
           select: 'name isVip pic roles' // 筛选出来的字段
         })
     )
+  },
+  // 查询本周热议 7天以内 评论数最多的
+  getTopWeek: function () {
+    return this.find({
+      created: {
+        // $get操作运算符
+        $gte: moment().subtract(7, 'day')
+      }
+    },
+    // 那些数据需要给到我
+    {
+      answer: 1, // 筛选需要的字段 0不需要 1需要
+      title: 1
+    })
+      .sort({
+        answer: -1 // 倒叙排序
+      })
+      .limit(15)
   }
+  // getTopWeek: function () {
+  //   return this.find(
+  //     {
+  //       created: {
+  //         $gte: moment().subtract(7, 'days')
+  //       }
+  //     },
+  //     {
+  //       answer: 1,
+  //       title: 1
+  //     }).sort({ answer: -1 })
+  //     .limit(15)
+  // }
 }
 
-const PostModel = mongoose.model('post', PostSchema)
+const PostModel = mongoose.model(
+  'post',
+  PostSchema,
+  'post'
+)
 
 export default PostModel
