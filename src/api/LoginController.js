@@ -5,6 +5,7 @@ import config from '@/config'
 import { checkCode } from '@/common/utils'
 import User from '@/model/User'
 import bcrypt from 'bcrypt'
+
 class LoginController {
   async forget (ctx) {
     const { body } = ctx.request // 通过 ctx.request 获取post带过来的参数
@@ -91,7 +92,7 @@ class LoginController {
     // 2. 验证图片验证码的正确和实效性
     // 3. 验证用户名密码正确
     // 4. 返回token
-    const {
+    let {
       body: { username, password, code, sid }
     } = ctx.request // 用于接收post的参数
     // 根据sid 判断code是否过期及有效
@@ -102,7 +103,8 @@ class LoginController {
       const user = await User.findOne({
         username
       })
-      if (user.password === password) {
+      // 比较库里面的和传过来的密码是否正确
+      if (await bcrypt.compare(password, user.password)) {
         chechUserPassword = true
       }
       if (chechUserPassword) {
@@ -110,12 +112,23 @@ class LoginController {
           {
             _id: '11776174@qq.com',
             exp: Math.floor(Date.now() / 1000) + 60 * 60 // 方式1设置过期时间 1小时过期
+            // exp: Math.floor(Date.now() / 1000) + 60 * 1 // 方式1设置过期时间 1小时过期
           },
           config.JWT_SECREY
         )
+        // 把json数据捞出来
+        let userObj = user.toJSON()
+        // 删除掉一些铭感的数据
+        let arr = ['password', 'username', 'roles']
+        arr.forEach(item => {
+          delete userObj[item]
+        })
         ctx.body = {
           code: 200,
-          token,
+          data: {
+            ...userObj,
+            token
+          },
           msg: '登录成功'
         }
       } else {

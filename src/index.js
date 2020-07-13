@@ -28,10 +28,12 @@ const app = new Koa()
 
 // jwt的使用方式2 这个包只拥有jwt鉴权的功能,但是生成token还需要另外一个库 jsonwebtoken
 const unlessPath = [
-  /^\/*/,
+  // /^\/*/,
+  /^\/public/,
   '/getCaptcha',
   '/reg',
-  '/getPostList'
+  '/getPostList',
+  '/login'
 ]
 // const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: [/^\/public/,/^\/login/] })
 const JWT = jwt({ secret: config.JWT_SECREY }).unless({ path: unlessPath })
@@ -57,7 +59,7 @@ app.use(middleware)
 
 app.use(router())
 
-const port = !isDevMode ? 12005 : 3000
+const port = !isDevMode ? 12005 : 12005
 
 app.listen(port, () => {
   console.log(`The serve running at:${port}`)

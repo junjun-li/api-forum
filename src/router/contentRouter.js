@@ -4,6 +4,8 @@ import ContentController from '@/api/ContentController'
 
 const router = new Router()
 
+router.prefix('/public')
+
 // 获取文章列表
 router.get('/getPostList', ContentController.getPostList)
 
