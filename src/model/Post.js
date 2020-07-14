@@ -1,5 +1,5 @@
 import mongoose from '@/config/DBHelpler'
-import moment from 'moment'
+import moment from 'dayjs'
 
 const Schema = mongoose.Schema
 
@@ -12,7 +12,7 @@ const PostSchema = new Schema({
   }, // 找到 users 表
   title: { type: String }, // 文章标题
   content: { type: String }, // 文章内容
-  created: { type: Number }, // 创建时间
+  created: { type: Date }, // 创建时间
   catalog: { type: String }, // 帖子分类, index-全部,ask-提问,advise-建议,discuss-交流,share-分享,news-动态
   fav: { type: String }, // 帖子积分
   isEnd: { type: String }, // 0-未结束,1-已结贴
@@ -26,7 +26,7 @@ const PostSchema = new Schema({
 
 // 添加中间件 创建时间
 PostSchema.pre('save', function (next) {
-  this.created = new Date().getTime()
+  this.created = moment().format('YYYY-MM-DD HH:mm:ss')
   next()
 })
 

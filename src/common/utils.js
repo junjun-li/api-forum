@@ -1,5 +1,6 @@
 import { getValue } from '@/config/RedisConfig'
-
+import jwt from 'jsonwebtoken'
+import config from '@/config/index'
 /**
  * 判断redis中是否存在sid和验证码是否正确
  * @param {string} key sid
@@ -20,4 +21,8 @@ export const checkCode = async (key, value) => {
   } else {
     return false
   }
+}
+
+export const getJWTPayload = token => {
+  return jwt.verify(token.split(' ')[1], config.JWT_SECREY)
 }

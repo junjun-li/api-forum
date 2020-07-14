@@ -69,9 +69,7 @@ class LoginController {
           password: body.password,
           created: new Date().getTime()
         })
-        debugger
         const result = await user.save()
-        debugger
         ctx.body = {
           code: 0,
           data: result,
@@ -110,7 +108,7 @@ class LoginController {
       if (chechUserPassword) {
         const token = jsonwebtoken.sign(
           {
-            _id: '11776174@qq.com',
+            _id: user._id,
             exp: Math.floor(Date.now() / 1000) + 60 * 60 // 方式1设置过期时间 1小时过期
             // exp: Math.floor(Date.now() / 1000) + 60 * 1 // 方式1设置过期时间 1小时过期
           },

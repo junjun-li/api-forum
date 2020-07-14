@@ -1,5 +1,5 @@
 import mongoose from '@/config/DBHelpler'
-
+import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const UserSchema = new Schema({
@@ -16,8 +16,8 @@ const UserSchema = new Schema({
   }, // 用户名
   password: { type: String }, // 密码
   name: { type: String }, // 昵称
-  created: { type: Number }, // 注册时间
-  updated: { type: Number }, // 更新时间
+  created: { type: Date }, // 注册时间
+  updated: { type: Date }, // 更新时间
   favs: { type: Number, default: 100 }, // 用户积分
   gender: { type: String, default: '0' }, // 性别, 0-男 1-女
   roles: { type: Array, default: ['user'] }, // 角色 user-普通用户, admin-管理员, super_admin-超级管理员
@@ -31,8 +31,8 @@ const UserSchema = new Schema({
 })
 // 保存的时候 传一个时间
 UserSchema.pre('save', function (next) {
-  // this.created = moment().format('YYY-MM-DD HH:mm:ss')
-  this.created = new Date().getTime()
+  this.created = moment().format('YYYY-MM-DD HH:mm:ss')
+  // this.created = new Date().getTime()
   next()
 })
 

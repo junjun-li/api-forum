@@ -1,11 +1,11 @@
 import mongoose from '@/config/DBHelpler'
-
+import moment from 'dayjs'
 const Schema = mongoose.Schema
 
 const LinksSchema = new Schema({
   title: { type: String },
   link: { type: String },
-  created: { type: Number },
+  created: { type: Date },
   isTop: { type: String },
   sort: { type: String },
   type: {
@@ -15,7 +15,7 @@ const LinksSchema = new Schema({
 })
 
 LinksSchema.pre('save', function (next) {
-  this.created = new Date().getTime()
+  this.created = moment().format('YYYY-MM-DD HH:mm:ss')
   next()
 })
 
