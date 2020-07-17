@@ -17,7 +17,7 @@ class PublicController {
     setValue(body.sid, newCaptca.text, 60 * 5)
     ctx.body = {
       code: 0,
-      data: newCaptca.data,
+      data: newCaptca,
       msg: '验证码发送成功'
     }
   }

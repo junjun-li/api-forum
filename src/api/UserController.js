@@ -20,7 +20,6 @@ class UserController {
     const userInfo = await User.findById(obj._id)
     let newRecord = {}
     let result = ''
-    debugger
     if (record !== null) {
       // 说明有历史的签到数据
       // 判断用户上一次签到的日期和今天的日期是否相同
@@ -34,7 +33,7 @@ class UserController {
           data: {
             favs: userInfo.favs, // 用户积分
             count: userInfo.count, // 用户签到的次数
-            lastSign: record.created // 最后一次签到的时间
+            lastSign: record.created
           },
           msg: '用户已签到'
         }
@@ -111,8 +110,7 @@ class UserController {
       // 保存用户的签到记录, 用户下一次签到的时候,才能判断是否连续的签到
       newRecord = new SignRecord({
         uid: obj._id,
-        favs: 5,
-        lastSign: moment().format('YYYY-MM-DD HH:mm:ss')
+        favs: 5
       })
       // 保存这条数据
       await newRecord.save()
@@ -123,7 +121,10 @@ class UserController {
     }
     ctx.body = {
       code: 0,
-      data: result,
+      data: {
+        ...result,
+        lastSign: newRecord.created
+      },
       msg: '签到成功'
     }
   }

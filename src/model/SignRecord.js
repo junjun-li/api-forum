@@ -8,8 +8,8 @@ const SignRecordSchema = new Schema({
     ref: 'users'
   },
   created: { type: Date },
-  favs: { type: String },
-  lastSign: { type: String }
+  favs: { type: String }
+  // lastSign: { type: String }
 })
 
 SignRecordSchema.pre('save', function (next) {
@@ -18,6 +18,7 @@ SignRecordSchema.pre('save', function (next) {
 })
 
 SignRecordSchema.statics = {
+  // 查询最新的一条签到记录
   findByUid: function (uid) {
     return this
       .findOne({ uid: uid }) // 根据uid来查找

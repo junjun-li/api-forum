@@ -5,7 +5,7 @@ import config from '@/config'
 import { checkCode } from '@/common/utils'
 import User from '@/model/User'
 import bcrypt from 'bcrypt'
-
+import SignRecord from '@/model/SignRecord'
 class LoginController {
   async forget (ctx) {
     const { body } = ctx.request // 通过 ctx.request 获取post带过来的参数
@@ -58,7 +58,6 @@ class LoginController {
           msg: '该昵称已存在'
         }
       }
-      console.log(check)
       if (check) {
         // 写入数据库
         // 密码加密
@@ -82,7 +81,6 @@ class LoginController {
         msg: '验证码错误或已过期,请刷新验证码'
       }
     }
-    // console.log(body)
   }
 
   async login (ctx) {
@@ -97,15 +95,15 @@ class LoginController {
     const result = await checkCode(sid, code)
     if (result) {
       // 查库 匹配数据库的用户名和密码
-      let chechUserPassword = false
+      let checkUserPassword = false
       const user = await User.findOne({
         username
       })
       // 比较库里面的和传过来的密码是否正确
       if (await bcrypt.compare(password, user.password)) {
-        chechUserPassword = true
+        checkUserPassword = true
       }
-      if (chechUserPassword) {
+      if (checkUserPassword) {
         const token = jsonwebtoken.sign(
           {
             _id: user._id,
@@ -121,6 +119,20 @@ class LoginController {
         arr.forEach(item => {
           delete userObj[item]
         })
+        // 加入一个今日是否签到的属性
+        let signRecord = await SignRecord.findByUid(userObj._id)
+        if (signRecord !== null) {
+          // debugger
+          // 说明以前签到过了, 再看看签到
+          if (moment(signRecord.created).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+            userObj.isSign = true
+          } else {
+            userObj.isSign = false
+          }
+          userObj.lastSign = signRecord.created
+        } else {
+          userObj.isSign = false
+        }
         ctx.body = {
           code: 200,
           data: {
