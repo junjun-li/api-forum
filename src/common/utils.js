@@ -8,7 +8,6 @@ import config from '@/config/index'
  */
 export const checkCode = async (key, value) => {
   const redisData = await getValue(key)
-  console.log(redisData)
   // 如果有这个 sid
   // 能取到切不为null 不为undefined 不为''
   if (redisData) {
